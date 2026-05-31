@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <script>if(localStorage.getItem('skillhub-theme')==='light')document.documentElement.classList.add('light-mode-pre');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/public/css/app.css" rel="stylesheet" />
+    <script src="/public/js/theme.js"></script>
+    <style>
+      .section-label { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6366f1; margin-bottom:.4rem; }
+      .info-row { display:flex; align-items:center; gap:.75rem; padding:.75rem 0; border-bottom:1px solid rgba(148,163,184,.1); }
+      .info-row:last-child { border-bottom:none; }
+      .info-label { font-size:.78rem; color:#64748b; min-width:120px; }
+      .info-value { font-size:.92rem; color:#e2e8f0; font-weight:500; }
+      .token-box { font-family:monospace; font-size:1.4rem; letter-spacing:.25em; color:#818cf8; background:rgba(99,102,241,.12); border:1px solid rgba(99,102,241,.3); border-radius:10px; padding:.6rem 1.2rem; display:inline-block; }
+    </style>
+  </head>
+  <body>
+    <main class="container page-shell">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <p class="section-label mb-1">Hisob</p>
+          <h1 class="h3 mb-0" style="color:#e2e8f0;">Mening profilim</h1>
+        </div>
+        <div class="d-flex gap-2">
+          {{#if (eq role 'student')}}
+            <a href="/dashboard" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+          {{else if (eq role 'teacher')}}
+            <a href="/teacher/courses" class="btn btn-outline-secondary btn-sm">Kurslar</a>
+          {{else}}
+            <a href="/admin/users" class="btn btn-outline-secondary btn-sm">Admin panel</a>
+          {{/if}}
+          <form method="post" action="/logout" class="d-inline">
+            <button type="submit" class="btn btn-sm" style="background:transparent;border:1px solid rgba(239,68,68,.35);color:#f87171;border-radius:6px;">Chiqish</button>
+          </form>
+        </div>
+      </div>
+
+      {{#if success}}
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+          {{success}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+      {{#if error}}
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+          {{error}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+
+      <!-- Profile info -->
+      <div class="glass-card p-4 mb-4">
+        <p class="section-label">Shaxsiy ma'lumotlar</p>
+        <div class="info-row">
+          <span class="info-label">👤 Ism</span>
+          <span class="info-value">{{userName}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">📧 Email</span>
+          <span class="info-value">{{email}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🎭 Rol</span>
+          <span class="info-value">
+            {{#if (eq role 'admin')}}
+              <span class="badge" style="background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3);">Admin</span>
+            {{else if (eq role 'teacher')}}
+              <span class="badge" style="background:rgba(99,102,241,.2);color:#818cf8;border:1px solid rgba(99,102,241,.3);">O'qituvchi</span>
+            {{else}}
+              <span class="badge" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.25);">Talaba</span>
+            {{/if}}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🤖 Telegram</span>
+          <span class="info-value">
+            {{#if telegramLinked}}
+              <span style="color:#4ade80;">✓ Bog'langan</span>
+              <span style="color:#64748b;font-size:.8rem;margin-left:.5rem;">(ID: {{telegramId}})</span>
+            {{else}}
+              <span style="color:#64748b;">Bog'lanmagan</span>
+            {{/if}}
+          </span>
+        </div>
+      </div>
+
+      <!-- Telegram linking -->
+      <div class="glass-card p-4 mb-4">
+        <p class="section-label">Telegram bog'lash</p>
+        <p style="color:#94a3b8;font-size:.88rem;margin-bottom:1rem;">
+          Telegram botimizga quyidagi token orqali hisobingizni bog'lang.
+          Token <strong style="color:#f87171;">15 daqiqa</strong> amal qiladi.
+        </p>
+
+        <div class="mb-3">
+          <div class="token-box">{{linkToken}}</div>
+        </div>
+
+        <ol style="color:#94a3b8;font-size:.88rem;padding-left:1.2rem;margin-bottom:1rem;">
+          <li>Telegram da <strong style="color:#818cf8;">@SkillHubAcademyBot</strong> ni oching</li>
+          <li><code style="color:#c7d2fe;">/link {{linkToken}}</code> buyrug'ini yuboring</li>
+          <li>Muvaffaqiyatli bog'langandan so'ng sahifani yangilang</li>
+        </ol>
+
+        <a href="/profile" class="btn btn-outline-secondary btn-sm">🔄 Yangi token olish</a>
+      </div>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

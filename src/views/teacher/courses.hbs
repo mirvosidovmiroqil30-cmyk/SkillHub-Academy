@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>if(localStorage.getItem('skillhub-theme')==='light')document.documentElement.classList.add('light-mode-pre');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="/public/css/app.css" rel="stylesheet" />
+    <script src="/public/js/theme.js"></script>
+    <style>
+      /* ── Dark table override ─────────────────────────────────────── */
+      .dark-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        color: #e2e8f0;
+      }
+      .dark-table thead tr {
+        background: rgba(99, 102, 241, 0.12);
+      }
+      .dark-table thead th {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+        white-space: nowrap;
+      }
+      .dark-table tbody tr {
+        transition: background 0.15s;
+      }
+      .dark-table tbody tr:hover {
+        background: rgba(99, 102, 241, 0.07);
+      }
+      .dark-table tbody td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+        vertical-align: middle;
+        font-size: 0.9rem;
+        background: transparent;
+      }
+      .dark-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* ── Card section header ─────────────────────────────────────── */
+      .section-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #6366f1;
+        margin-bottom: 0.5rem;
+      }
+      .section-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ── Badge ───────────────────────────────────────────────────── */
+      .badge-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.6rem;
+        height: 1.6rem;
+        padding: 0 0.45rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        background: rgba(99, 102, 241, 0.22);
+        color: #a5b4fc;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+
+      /* ── Divider ─────────────────────────────────────────────────── */
+      .card-divider {
+        border: none;
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+        margin: 1.5rem 0;
+      }
+
+      /* ── Empty state ─────────────────────────────────────────────── */
+      .empty-state {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: #475569;
+        font-size: 0.9rem;
+      }
+
+      /* ── Danger btn subtle ───────────────────────────────────────── */
+      .btn-ghost-danger {
+        background: transparent;
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: #f87171;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .btn-ghost-danger:hover {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.6);
+        color: #fca5a5;
+      }
+
+      /* ── Course title cell ───────────────────────────────────────── */
+      .course-title-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .course-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 8px;
+        background: rgba(99, 102, 241, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container page-shell">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <p class="section-label mb-1">Teacher Workspace</p>
+          <h1 class="h3 mb-0" style="color:#e2e8f0;">Welcome, {{userName}}</h1>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/teacher/submissions" class="btn btn-outline-secondary btn-sm">Submissions</a>
+          <form method="post" action="/logout" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-ghost-danger">Logout</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      {{#if success}}
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+          {{success}}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+      {{#if error}}
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+          {{error}}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+
+      <!-- Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="glass-card p-3 text-center">
+            <div class="fw-bold mb-1" style="font-size:1.8rem;color:#818cf8;">{{stats.courses}}</div>
+            <div class="text-secondary" style="font-size:0.8rem;">Kurslar</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card p-3 text-center">
+            <div class="fw-bold mb-1" style="font-size:1.8rem;color:#818cf8;">{{stats.assignments}}</div>
+            <div class="text-secondary" style="font-size:0.8rem;">Topshiriqlar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COURSES SECTION ──────────────────────────────────────────── -->
+      <div class="glass-card p-4 mb-4">
+        <p class="section-label">Kurs boshqaruvi</p>
+        <h5 class="section-title">Yangi kurs yaratish</h5>
+
+        <form method="post" action="/teacher/courses" enctype="multipart/form-data" class="row g-2 mb-0">
+          <div class="col-md-3">
+            <input class="form-control" name="title" placeholder="Kurs nomi" required />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" name="description" placeholder="Tavsif" />
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" name="category_id">
+              <option value="">Kategoriya</option>
+              {{#each categories}}
+                <option value="{{this.id}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <input class="form-control" type="file" name="image" accept="image/*" />
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">Yaratish</button>
+          </div>
+        </form>
+
+        <hr class="card-divider" />
+
+        <p class="section-label">Mening kurslarim</p>
+
+        {{#if myCourses.length}}
+          <div class="table-responsive">
+            <table class="dark-table">
+              <thead>
+                <tr>
+                  <th>Kurs</th>
+                  <th>Tavsif</th>
+                  <th>Kategoriya</th>
+                  <th style="text-align:center;">Topshiriqlar</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each myCourses}}
+                  <tr>
+                    <td>
+                      <div class="course-title-cell">
+                        <div class="course-icon">📚</div>
+                        <span class="fw-semibold" style="color:#c7d2fe;">{{this.title}}</span>
+                      </div>
+                    </td>
+                    <td style="color:#94a3b8;max-width:220px;">
+                      {{#if this.description}}
+                        <span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                          {{this.description}}
+                        </span>
+                      {{else}}
+                        <span style="color:#475569;font-style:italic;">—</span>
+                      {{/if}}
+                    </td>
+                    <td>
+                      {{#if this.category}}
+                        <span class="badge-count" style="border-radius:6px;font-size:0.7rem;padding:0.2rem 0.55rem;">
+                          {{this.category}}
+                        </span>
+                      {{else}}
+                        <span style="color:#475569;">—</span>
+                      {{/if}}
+                    </td>
+                    <td style="text-align:center;">
+                      <span class="badge-count">{{this.assignmentCount}}</span>
+                    </td>
+                    <td style="text-align:right;">
+                      <!-- Edit button -->
+                      <button class="btn btn-sm me-1" type="button"
+                        style="background:rgba(99,102,241,.18);border:1px solid rgba(99,102,241,.3);color:#818cf8;font-size:.75rem;padding:.25rem .65rem;border-radius:6px;"
+                        data-bs-toggle="modal" data-bs-target="#editCourseModal{{this.id}}">
+                        Tahrirlash
+                      </button>
+                      <form method="post" action="/teacher/courses/{{this.id}}/delete" class="d-inline">
+                        <button class="btn-ghost-danger" type="submit">O'chirish</button>
+                      </form>
+                    </td>
+                  </tr>
+
+                  <!-- Edit Modal -->
+                  <div class="modal fade" id="editCourseModal{{this.id}}" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content" style="background:#0f172a;border:1px solid rgba(148,163,184,.15);">
+                        <div class="modal-header" style="border-bottom:1px solid rgba(148,163,184,.1);">
+                          <h5 class="modal-title" style="color:#e2e8f0;">Kursni tahrirlash</h5>
+                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form method="post" action="/teacher/courses/{{this.id}}/update" enctype="multipart/form-data">
+                          <div class="modal-body">
+                            <div class="mb-3">
+                              <label class="form-label" style="color:#94a3b8;font-size:.82rem;">Kurs nomi</label>
+                              <input class="form-control" name="title" value="{{this.title}}" required />
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label" style="color:#94a3b8;font-size:.82rem;">Tavsif</label>
+                              <textarea class="form-control" name="description" rows="3">{{this.description}}</textarea>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label" style="color:#94a3b8;font-size:.82rem;">Yangi rasm (ixtiyoriy)</label>
+                              <input class="form-control" type="file" name="image" accept="image/*" />
+                            </div>
+                          </div>
+                          <div class="modal-footer" style="border-top:1px solid rgba(148,163,184,.1);">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Bekor qilish</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Saqlash</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>
+            Sizda hali kurslar mavjud emas.
+          </div>
+        {{/if}}
+      </div>
+
+      <!-- ── ASSIGNMENTS SECTION ──────────────────────────────────────── -->
+      <div class="glass-card p-4 mb-4">
+        <p class="section-label">Topshiriq boshqaruvi</p>
+        <h5 class="section-title">Yangi topshiriq yaratish</h5>
+
+        <form method="post" action="/teacher/assignments" class="row g-2 mb-0">
+          <div class="col-md-3">
+            <select class="form-select" name="course_id" required>
+              <option value="">Kursni tanlang</option>
+              {{#each myCourses}}
+                <option value="{{this.id}}">{{this.title}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" name="title" placeholder="Topshiriq nomi" required />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" type="datetime-local" name="deadline" required />
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-primary w-100" type="submit">Topshiriq yaratish</button>
+          </div>
+          <div class="col-12">
+            <textarea class="form-control" name="description" rows="2" placeholder="Tavsif (ixtiyoriy)"></textarea>
+          </div>
+        </form>
+
+        <hr class="card-divider" />
+
+        <p class="section-label">Topshiriqlar ro'yxati</p>
+
+        {{#if assignments.length}}
+          <div class="table-responsive">
+            <table class="dark-table">
+              <thead>
+                <tr>
+                  <th>Topshiriq</th>
+                  <th>Kurs</th>
+                  <th>Muddat</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each assignments}}
+                  <tr>
+                    <td>
+                      <div class="course-title-cell">
+                        <div class="course-icon">📝</div>
+                        <span class="fw-semibold" style="color:#c7d2fe;">{{this.title}}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge-count" style="border-radius:6px;font-size:0.7rem;padding:0.2rem 0.55rem;">
+                        {{this.courseName}}
+                      </span>
+                    </td>
+                    <td style="color:#94a3b8;white-space:nowrap;">
+                      🕐 {{this.deadline}}
+                    </td>
+                    <td style="text-align:right;">
+                      <form method="post" action="/teacher/assignments/{{this.id}}/delete" class="d-inline">
+                        <button class="btn-ghost-danger" type="submit">O'chirish</button>
+                      </form>
+                    </td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">📋</div>
+            Topshiriqlar hali yaratilmagan.
+          </div>
+        {{/if}}
+      </div>
+
+      <!-- Footer nav -->
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="/" class="btn btn-outline-secondary btn-sm">Home</a>
+        <a href="/courses" class="btn btn-outline-secondary btn-sm">Course Catalog</a>
+        <a href="/teacher/submissions" class="btn btn-primary btn-sm">Submissions</a>
+      </div>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

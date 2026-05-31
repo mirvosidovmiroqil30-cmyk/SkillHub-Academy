@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>if(localStorage.getItem('skillhub-theme')==='light')document.documentElement.classList.add('light-mode-pre');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/public/css/app.css" rel="stylesheet" />
+    <script src="/public/js/theme.js"></script>
+    <style>
+      .section-label { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6366f1; margin-bottom:.4rem; }
+      .empty-state { padding:2.5rem 1rem; text-align:center; color:#475569; font-size:.9rem; }
+      .assignment-card { background:rgba(12,18,34,.92); border:1px solid rgba(148,163,184,.14); border-radius:16px; padding:1.25rem; transition:border-color .2s; }
+      .assignment-card:hover { border-color:rgba(99,102,241,.4); }
+      .deadline-badge { display:inline-flex; align-items:center; gap:.35rem; font-size:.78rem; padding:.25rem .65rem; border-radius:999px; }
+      .deadline-soon  { background:rgba(239,68,68,.15);  color:#f87171; border:1px solid rgba(239,68,68,.3); }
+      .deadline-ok    { background:rgba(34,197,94,.12);  color:#4ade80; border:1px solid rgba(34,197,94,.25); }
+      .deadline-past  { background:rgba(148,163,184,.1); color:#64748b; border:1px solid rgba(148,163,184,.2); }
+      .submitted-badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.75rem; padding:.2rem .55rem; border-radius:6px; background:rgba(34,197,94,.15); color:#4ade80; border:1px solid rgba(34,197,94,.25); }
+    </style>
+  </head>
+  <body>
+    <main class="container page-shell">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <p class="section-label mb-1">Talaba paneli</p>
+          <h1 class="h3 mb-0" style="color:#e2e8f0;">Topshiriqlar</h1>
+          <p class="text-secondary mb-0" style="font-size:.85rem;">{{userName}}</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/dashboard" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+          <a href="/student/grades" class="btn btn-outline-secondary btn-sm">Baholar</a>
+          <form method="post" action="/logout" class="d-inline">
+            <button type="submit" class="btn btn-sm" style="background:transparent;border:1px solid rgba(239,68,68,.35);color:#f87171;border-radius:6px;">Chiqish</button>
+          </form>
+        </div>
+      </div>
+
+      {{#if success}}
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+          {{success}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+      {{#if error}}
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+          {{error}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+
+      <!-- Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="glass-card p-3 text-center">
+            <div class="fw-bold mb-1" style="font-size:1.8rem;color:#818cf8;">{{stats.total}}</div>
+            <div class="text-secondary" style="font-size:.8rem;">Jami</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card p-3 text-center">
+            <div class="fw-bold mb-1" style="font-size:1.8rem;color:#f87171;">{{stats.upcoming}}</div>
+            <div class="text-secondary" style="font-size:.8rem;">Muddati yaqin</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card p-3 text-center">
+            <div class="fw-bold mb-1" style="font-size:1.8rem;color:#4ade80;">{{stats.submitted}}</div>
+            <div class="text-secondary" style="font-size:.8rem;">Yuborilgan</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card p-3 text-center">
+            <div class="fw-bold mb-1" style="font-size:1.8rem;color:#64748b;">{{stats.expired}}</div>
+            <div class="text-secondary" style="font-size:.8rem;">Muddati o'tgan</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 mb-4">
+        <p class="section-label">Barcha topshiriqlar</p>
+
+        {{#if assignments.length}}
+          <div class="row g-3">
+            {{#each assignments}}
+              <div class="col-md-6 col-lg-4">
+                <div class="assignment-card">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div style="font-size:.75rem;color:#6366f1;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">
+                      {{this.courseName}}
+                    </div>
+                    {{#if this.isSubmitted}}
+                      <span class="submitted-badge">✓ Yuborildi</span>
+                    {{/if}}
+                  </div>
+
+                  <h6 class="fw-semibold mb-1" style="color:#c7d2fe;">{{this.title}}</h6>
+
+                  {{#if this.description}}
+                    <p class="text-secondary mb-2" style="font-size:.82rem;">{{this.description}}</p>
+                  {{/if}}
+
+                  <div class="mb-3">
+                    {{#if this.isPast}}
+                      <span class="deadline-badge deadline-past">⏰ Muddati o'tdi: {{this.deadline}}</span>
+                    {{else if this.isSoon}}
+                      <span class="deadline-badge deadline-soon">⚠️ Yaqin: {{this.deadline}}</span>
+                    {{else}}
+                      <span class="deadline-badge deadline-ok">🕐 {{this.deadline}}</span>
+                    {{/if}}
+                  </div>
+
+                  {{#if this.isSubmitted}}
+                    <div style="font-size:.8rem;color:#4ade80;padding:.5rem .75rem;background:rgba(34,197,94,.08);border-radius:8px;border:1px solid rgba(34,197,94,.2);">
+                      ✓ Topshiriq yuborilgan
+                      {{#if this.score}}
+                        — Ball: <strong>{{this.score}}/100</strong>
+                      {{else}}
+                        — Baholanmagan
+                      {{/if}}
+                    </div>
+                  {{else if this.isPast}}
+                    <div style="font-size:.8rem;color:#64748b;padding:.5rem .75rem;background:rgba(148,163,184,.06);border-radius:8px;border:1px solid rgba(148,163,184,.15);">
+                      Muddat o'tib ketdi
+                    </div>
+                  {{else}}
+                    <form method="post" action="/assignments/{{this.id}}/submit" enctype="multipart/form-data">
+                      <div class="mb-2">
+                        <input type="file" name="file" class="form-control form-control-sm" required
+                               accept=".pdf,.doc,.docx,.zip,.txt,.png,.jpg,.jpeg" />
+                      </div>
+                      <button class="btn btn-primary btn-sm w-100" type="submit">
+                        📤 Yuborish
+                      </button>
+                    </form>
+                  {{/if}}
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <div style="font-size:2.5rem;margin-bottom:.75rem;">📋</div>
+            <div style="color:#64748b;margin-bottom:.25rem;">Hozircha topshiriqlar mavjud emas.</div>
+            <div style="color:#475569;font-size:.8rem;">Kurslarga yoziling va topshiriqlar paydo bo'ladi.</div>
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="/dashboard" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+        <a href="/courses" class="btn btn-primary btn-sm">Kurslar</a>
+        <a href="/student/grades" class="btn btn-outline-secondary btn-sm">Baholar</a>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

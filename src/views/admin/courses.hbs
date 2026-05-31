@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <script>if(localStorage.getItem('skillhub-theme')==='light')document.documentElement.classList.add('light-mode-pre');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/public/css/app.css" rel="stylesheet" />
+    <script src="/public/js/theme.js"></script>
+    <style>
+      .dark-table { width:100%; border-collapse:separate; border-spacing:0; color:#e2e8f0; }
+      .dark-table thead tr { background:rgba(99,102,241,0.12); }
+      .dark-table thead th { padding:.75rem 1rem; font-size:.72rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:#94a3b8; border-bottom:1px solid rgba(148,163,184,.14); white-space:nowrap; }
+      .dark-table tbody tr { transition:background .15s; }
+      .dark-table tbody tr:hover { background:rgba(99,102,241,.07); }
+      .dark-table tbody td { padding:.85rem 1rem; border-bottom:1px solid rgba(148,163,184,.08); vertical-align:middle; font-size:.9rem; background:transparent; }
+      .dark-table tbody tr:last-child td { border-bottom:none; }
+      .section-label { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6366f1; margin-bottom:.4rem; }
+      .empty-state { padding:3rem 1rem; text-align:center; color:#475569; }
+      .btn-ghost-danger { background:transparent; border:1px solid rgba(239,68,68,.35); color:#f87171; font-size:.75rem; padding:.25rem .65rem; border-radius:6px; cursor:pointer; transition:background .15s; }
+      .btn-ghost-danger:hover { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.6); color:#fca5a5; }
+      .course-cell { display:flex; align-items:center; gap:.65rem; }
+      .course-icon { width:2.2rem; height:2.2rem; border-radius:8px; background:rgba(99,102,241,.18); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+      .course-thumb { width:2.2rem; height:2.2rem; border-radius:8px; object-fit:cover; flex-shrink:0; }
+      .badge-role { display:inline-flex; align-items:center; padding:.2rem .6rem; border-radius:6px; font-size:.72rem; font-weight:600; }
+      .badge-category { background:rgba(99,102,241,.15); color:#a5b4fc; border:1px solid rgba(99,102,241,.25); }
+      .badge-teacher { background:rgba(34,197,94,.12); color:#4ade80; border:1px solid rgba(34,197,94,.22); }
+      .desc-cell { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#64748b; font-size:.82rem; }
+    </style>
+  </head>
+  <body>
+    <main class="container page-shell">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <p class="section-label mb-1">Admin panel</p>
+          <h1 class="h3 mb-0" style="color:#e2e8f0;">Kurslar boshqaruvi</h1>
+          <p class="text-secondary mb-0" style="font-size:.85rem;">Salom, {{userName}}</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/admin/users" class="btn btn-outline-secondary btn-sm">Foydalanuvchilar</a>
+          <a href="/admin/categories" class="btn btn-outline-secondary btn-sm">Kategoriyalar</a>
+          <form method="post" action="/logout" class="d-inline">
+            <button type="submit" class="btn-ghost-danger btn btn-sm">Chiqish</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      {{#if success}}
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+          {{success}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+      {{#if error}}
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+          {{error}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {{/if}}
+
+      <!-- Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <div class="glass-card p-4 text-center">
+            <h3 class="fw-bold mb-1" style="color:#818cf8;">{{courses.length}}</h3>
+            <p class="text-secondary mb-0">Jami kurslar</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses table -->
+      <div class="glass-card p-4 mb-4">
+        <p class="section-label">Kurslar ro'yxati</p>
+
+        {{#if courses.length}}
+          <div class="table-responsive">
+            <table class="dark-table">
+              <thead>
+                <tr>
+                  <th>Kurs</th>
+                  <th>O'qituvchi</th>
+                  <th>Kategoriya</th>
+                  <th>Tavsif</th>
+                  <th style="text-align:right;">Amal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each courses}}
+                  <tr>
+                    <td>
+                      <div class="course-cell">
+                        {{#if this.image}}
+                          <img src="{{this.image}}" alt="cover" class="course-thumb" />
+                        {{else}}
+                          <div class="course-icon">📚</div>
+                        {{/if}}
+                        <div>
+                          <div class="fw-semibold" style="color:#c7d2fe;">{{this.title}}</div>
+                          <div style="font-size:.72rem;color:#475569;">#{{this.id}}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge-role badge-teacher">👤 {{this.teacher}}</span>
+                    </td>
+                    <td>
+                      {{#if this.category}}
+                        <span class="badge-role badge-category">{{this.category}}</span>
+                      {{else}}
+                        <span style="color:#475569;font-size:.82rem;">—</span>
+                      {{/if}}
+                    </td>
+                    <td>
+                      <span class="desc-cell">
+                        {{#if this.description}}{{this.description}}{{else}}—{{/if}}
+                      </span>
+                    </td>
+                    <td style="text-align:right;">
+                      <form method="post" action="/admin/courses/{{this.id}}/delete" class="d-inline"
+                            onsubmit="return confirm('Kursni o\'chirishni tasdiqlaysizmi?')">
+                        <button class="btn-ghost-danger" type="submit">O'chirish</button>
+                      </form>
+                    </td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <div style="font-size:2.5rem;margin-bottom:.75rem;">📭</div>
+            <div style="color:#64748b;">Hozircha kurslar mavjud emas.</div>
+          </div>
+        {{/if}}
+      </div>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
